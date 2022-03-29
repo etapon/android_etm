@@ -79,6 +79,7 @@ public class ProfileFragment extends Fragment {
                 dialog.show();
                 editor.clear();
                 editor.commit();
+                getActivity().finish();
                 startActivity(new Intent(getContext(), AuthActivity.class));
                 dialog.dismiss();
             }
