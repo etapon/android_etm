@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">E-Tapon Mo</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="access_token">pk.eyJ1IjoiZGFnenVlMjUiLCJhIjoiY2t5aXB4ZGUxMXV3YzJwbGtrZzV2c3A1eCJ9.N1NJsWrEJAuCbOlxol71IA</string>
+</resources>

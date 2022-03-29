@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@color/colorLightGrey"
+        android:id="@+id/imgUserImage"
+        android:layout_marginBottom="10dp"
+        />
+
+    <TextView
+        android:id="@+id/txtUserName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="User Name"
+        android:gravity="center_horizontal"
+        android:textSize="30dp"
+        android:layout_marginTop="30dp"/>
+
+    <TextView
+        android:id="@+id/txtUserRole"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Role"
+        android:gravity="center_horizontal"
+        android:textSize="15dp"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/txtUserEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="email"
+        android:gravity="center_horizontal"
+        android:textSize="15dp"
+        android:paddingTop="10dp"/>
+
+    <TextView
+        android:id="@+id/txtUserStreet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Street"
+        android:gravity="center_horizontal"
+        android:textSize="15dp"
+        android:paddingTop="10dp"/>
+
+    <Button
+        android:id="@+id/btnUserLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_round_primary"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
+        android:layout_marginTop="50dp"
+        android:text="Log Out"/>
+
+
+
+</LinearLayout>

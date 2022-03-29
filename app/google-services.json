@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "967918231131",
+    "firebase_url": "https://e-tapon-mo-default-rtdb.firebaseio.com/",
+    "project_id": "e-tapon-mo",
+    "storage_bucket": "e-tapon-mo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967918231131:android:6182638a47c0223a8be97e",
+        "android_client_info": {
+          "package_name": "com.example.e_taponmo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "967918231131-cp9sjjurirtm35g90utbd5ciprt2ks8o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUR2nRWrGAW0x3c8BcDpoA-qlwqg8yZTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "967918231131-cp9sjjurirtm35g90utbd5ciprt2ks8o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
