@@ -12,13 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
+            android:elevation="10dp"
+            android:background="@drawable/white_background"
             >
 
             <LinearLayout
@@ -26,6 +28,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="3dp"
+                android:layout_marginRight="10dp"
                 android:gravity="center">
 
                 <LinearLayout
@@ -34,6 +37,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20sp"
                     android:orientation="vertical"
+                    android:elevation="5dp"
                     android:layout_gravity="center_horizontal"
                     />
 
@@ -42,6 +46,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
+                    android:textSize="12dp"
+                    android:textColor="@color/black_semi_transparent"
                     android:text="Street Name"
                     />
                 <TextView
@@ -49,6 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="10dp"
+                    android:textColor="@color/black_semi_transparent"
                     android:text=""
                     />
             </LinearLayout>
@@ -58,10 +65,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="3dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:gravity="center">
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:elevation="5dp"
                     android:src="@drawable/ic_baseline_battery_0_bar_24"
                     />
 
@@ -69,7 +79,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="10dp"
-                    android:text="TrashBin Capacity Percentage: "
+                    android:text="Percentage: "
+                    android:textColor="@color/black_semi_transparent"
                     />
                 <TextView
                     android:id="@+id/txtPercentageValue"
@@ -78,6 +89,7 @@
                     android:text="Value%"
                     android:textSize="15dp"
                     android:textStyle="bold"
+                    android:textColor="@color/black_semi_transparent"
                     />
             </LinearLayout>
 
@@ -86,38 +98,58 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="3dp"
+                android:layout_marginLeft="10dp"
                 android:gravity="center">
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:elevation="5dp"
                     android:src="@drawable/ic_baseline_fitness_center_24"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="10dp"
-                    android:text="TrashBin Weight: "/>
+                    android:textColor="@color/black_semi_transparent"
+                    android:text="Weight: "/>
                 <TextView
                     android:id="@+id/txtWeightValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Value kg"
                     android:textSize="15dp"
+                    android:textColor="@color/black_semi_transparent"
                     android:textStyle="bold"
+
                     />
             </LinearLayout>
+
 
 
         </LinearLayout>
 
 
-        <com.mapbox.mapboxsdk.maps.MapView
-            android:id="@+id/city_map"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="10sp"
-            mapbox:mapbox_cameraTargetLat="14.5378"
-            mapbox:mapbox_cameraTargetLng="121.0014"
-            mapbox:mapbox_cameraZoom="10"/>
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:elevation="10dp"
+            android:background="@drawable/white_background"
+            app:cardCornerRadius="20dp">
+
+            <com.mapbox.mapboxsdk.maps.MapView
+                android:id="@+id/city_map"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                mapbox:mapbox_cameraTargetLat="14.5378"
+                mapbox:mapbox_cameraTargetLng="121.0014"
+                mapbox:mapbox_cameraZoom="10"/>
+
+        </androidx.cardview.widget.CardView>
+
+
+
+
 
     </LinearLayout>
 
@@ -139,7 +171,7 @@
             app:fab_colorPressed="@color/white_pressed"
             app:fab_size="mini"
             app:fab_icon="@drawable/ic_baseline_done_all_24"
-            app:fab_title="finish collecting"
+            app:fab_title="Finish Street"
             android:id="@+id/collectorFinishCollecting"
             />
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -148,9 +180,9 @@
             app:fab_colorNormal="@color/white"
             app:fab_colorPressed="@color/white_pressed"
             app:fab_size="mini"
-            app:fab_icon="@drawable/ic_baseline_play_arrow_24"
-            app:fab_title="start collecting"
-            android:id="@+id/collectorStartCollecting"
+            app:fab_icon="@drawable/ic_baseline_download_for_offline_24"
+            app:fab_title="Manual collect"
+            android:id="@+id/collectorCollect"
             />
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
@@ -159,8 +191,8 @@
             app:fab_colorPressed="@color/white_pressed"
             app:fab_size="mini"
             app:fab_icon="@drawable/ic_baseline_my_location_24"
-            app:fab_title="my location"
-            android:id="@+id/collectorMylocation"
+            app:fab_title="My location"
+            android:id="@+id/collectorStartCollecting"
             />
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
@@ -169,35 +201,10 @@
             app:fab_colorPressed="@color/white_pressed"
             app:fab_size="mini"
             app:fab_icon="@drawable/ic_baseline_keyboard_backspace_24"
-            app:fab_title="return to schedules"
+            app:fab_title="Return"
             android:id="@+id/backToSchedules"
             />
 
-
-
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
-
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/upload"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:src="@drawable/white_play"-->
-<!--        android:tint="@color/white"-->
-<!--        app:backgroundTint="@color/bootsTrap_colorPrimary"-->
-<!--        android:layout_gravity="bottom|right"-->
-<!--        android:layout_marginBottom="80dp"-->
-<!--        android:layout_marginRight="15dp"/>-->
-
-
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/center_lock"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:backgroundTint="@color/bootsTrap_colorPrimary"-->
-<!--        android:src="@drawable/ic_baseline_my_location_24"-->
-<!--        android:layout_gravity="bottom|right"-->
-<!--        android:layout_margin="15dp"/>-->
-
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

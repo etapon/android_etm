@@ -31,4 +31,5 @@
 
     <color name="color_active">#6CCCA5</color>
     <color name="color_offline">#BC1B22</color>
+    <color name="color_idle">#FFC30B</color>
 </resources>

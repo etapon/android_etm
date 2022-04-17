@@ -34,6 +34,8 @@ public class MyService extends Service {
     private DatabaseReference wasteType = database.getReference("wasteType");
     private String assigned;
     private String streetOnPref;
+    private String roleOnPref;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -44,6 +46,7 @@ public class MyService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         SharedPreferences userPref = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
         streetOnPref = (userPref.getString("street", ""));
+        roleOnPref = (userPref.getString("role", ""));
 
         getAssigned();
 
@@ -64,7 +67,7 @@ public class MyService extends Service {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String value = dataSnapshot.getValue(String.class);
-                if(value.equals("active") && assigned.equals(streetOnPref)){
+                if(value.equals("active") && assigned.equals(streetOnPref) && roleOnPref.equals("resident")){
                     createNotification();
                 }
             }
@@ -108,7 +111,7 @@ public class MyService extends Service {
                 manager.createNotificationChannel(channel);
             }
         }
-        Intent notificationIntent = new Intent(this,HomeActivity.class);
+        Intent notificationIntent = new Intent(this,CityForResidentsActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent contentIntent = PendingIntent.getActivity(this,0,notificationIntent,0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,id)

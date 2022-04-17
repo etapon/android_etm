@@ -105,7 +105,6 @@ public class ScheduleForResidentsFragment extends Fragment {
         refreshLayout.setRefreshing(true);
 
         if(role.equals("admin")){
-            Toast.makeText(getContext(), ""+role, Toast.LENGTH_SHORT).show();
 
             StringRequest request = new StringRequest(Request.Method.GET, constants.SCHEDULE_FOR_ADMIN, response -> {
                 try{

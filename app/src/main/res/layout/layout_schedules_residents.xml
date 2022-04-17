@@ -15,6 +15,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Schedules"
+            android:elevation="5dp"
+            android:textStyle="bold"
             android:textSize="20sp"/>
     </com.google.android.material.appbar.MaterialToolbar>
 

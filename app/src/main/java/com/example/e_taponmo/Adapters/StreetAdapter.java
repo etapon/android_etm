@@ -30,9 +30,7 @@ public class StreetAdapter extends RecyclerView.Adapter<StreetAdapter.StreetHold
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance("https://e-tapon-mo-default-rtdb.firebaseio.com/");
 
-    private DatabaseReference activeStatus = database.getReference("activeStatus");
     private DatabaseReference streetAssigned = database.getReference("streetAssigned");
-    private DatabaseReference wasteType = database.getReference("wasteType");
 
     public StreetAdapter(Context context, ArrayList<Street> list){
         this.list = list;
@@ -50,11 +48,9 @@ public class StreetAdapter extends RecyclerView.Adapter<StreetAdapter.StreetHold
     public void onBindViewHolder(@NonNull StreetHolder holder, int position) {
         Street street = list.get(position);
         holder.txtStreetName.setText(street.getStreetName());
-        System.out.println(street.getStreetName());
         holder.streetCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activeStatus.setValue("active");
                 streetAssigned.setValue(street.getStreetName());
                 context.startActivity(new Intent(context, CityActivity.class));
             }

@@ -237,25 +237,19 @@ public class SignUpFragment extends Fragment {
     }
 
     private void signup(){
+
         StringRequest request = new StringRequest(Request.Method.POST, CONSTANT.SIGNUP, response -> {
             try {
                 JSONObject object = new JSONObject(response);
                 if(object.getBoolean("success")){
+                    Toast.makeText(getContext(), "Success", Toast.LENGTH_LONG).show();
                     JSONObject user = object.getJSONObject("result");
-                    SharedPreferences userPref = getActivity().getApplicationContext().getSharedPreferences("user", getContext().MODE_PRIVATE);
-                    SharedPreferences.Editor editor = userPref.edit();
-                    editor.putString("token", object.getString("token"));
-                    editor.putString("id", user.getString("_id"));
-                    editor.putString("name", user.getString("name"));
-                    editor.putString("street", user.getString("street"));
-                    editor.putString("email", user.getString("email"));
-                    editor.putString("role", user.getString("role"));
-                    editor.putString("image", user.getString("image"));
-                    editor.putBoolean("isLoggedIn", true);
-                    editor.apply();
-                    Toast.makeText(getContext(), "Account has been created", Toast.LENGTH_LONG).show();
-                    checkRole();
-                    ((AuthActivity)getContext()).finish();
+
+                    Toast.makeText(getContext(), ""+object.getString("message"), Toast.LENGTH_LONG).show();
+
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameAuthContainer, new SignInFragment()).commit();
+                } else{
+                    Toast.makeText(getContext(), ""+object.getString("message"), Toast.LENGTH_LONG).show();
                 }
             }catch(JSONException e){
                 e.printStackTrace();
@@ -282,17 +276,4 @@ public class SignUpFragment extends Fragment {
         queue.add(request);
     }
 
-    public void checkRole() {
-        SharedPreferences userPref = getContext().getSharedPreferences("user", Context.MODE_PRIVATE);
-        String role = (userPref.getString("role", ""));
-
-        if (role.equals("resident")) {
-            startActivity(new Intent(getContext(), HomeActivity.class));
-        } else if (role.equals("collector")) {
-            startActivity(new Intent(getContext(), CollectorsActivity.class));
-        } else {
-            startActivity(new Intent(getContext(), HomeActivity.class));
-        }
-
-    }
 }

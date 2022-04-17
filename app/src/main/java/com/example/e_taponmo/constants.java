@@ -10,4 +10,9 @@ public class constants {
     public static final String COLLECTION = URL+"/collections/";
     public static final String SCHEDULE_FOR_RESIDENT = URL+"/schedules/streetSchedule";
     public static final String SCHEDULE_FOR_ADMIN = URL + "/schedules/adminSchedules";
+    public static final String COMPLAINTS_FOR_ADMIN = URL + "/complaints";
+    public static final String CREATE_COMPLAINT = URL + "/complaints";
+    public static final String DELETE_COMPLAINT = URL + "/complaints/";
+    public static final String UPDATE_COMPLAINT = URL + "/complaints/";
+    public static final String COMPLAINTS_FOR_RESIDENT = URL + "/complaints/";
 }

@@ -33,7 +33,6 @@ import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
-    ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     isFirstTime();
                 }
-
             }
         },1500);
 
@@ -81,15 +79,14 @@ public class MainActivity extends AppCompatActivity {
         String role = (userPref.getString("role", ""));
 
         if (role.equals("resident")){
-            Toast.makeText(this, "hi gagawa to ng notification", Toast.LENGTH_SHORT).show();
-            startService(new Intent(getApplication(),MyService.class));
             startActivity(new Intent(MainActivity.this,HomeActivity.class));
+            finish();
         } else if(role.equals("collector")){
             startActivity(new Intent(MainActivity.this,CollectorsActivity.class));
+            finish();
         } else {
-            Toast.makeText(this, "hi gagawa to ng notification", Toast.LENGTH_SHORT).show();
-            startService(new Intent(getApplication(),MyService.class));
             startActivity(new Intent(MainActivity.this,HomeActivity.class));
+            finish();
         }
     }
 

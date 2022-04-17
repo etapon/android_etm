@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.GradientDrawable;
@@ -45,6 +47,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -57,6 +60,8 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
     private LocationComponent locationComponent;
     private PermissionsManager permissionsManager;
     private com.getbase.floatingactionbutton.FloatingActionButton floatingActionButton, findCollector, backToHome;
+
+    private Float collectorLat, collectorLong;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance("https://e-tapon-mo-default-rtdb.firebaseio.com/");
 
@@ -72,6 +77,7 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
     private LinearLayout linearView;
     private MarkerOptions options = new MarkerOptions();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,8 +92,6 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
         mapView = (MapView) findViewById(R.id.city_map_residents);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-        txtWeight = (TextView) findViewById(R.id.txtWeightResidents);
-        txtPercentage = (TextView) findViewById(R.id.txtPercentageResidents);
         txtAssignedStreet = (TextView) findViewById(R.id.collectorAssignedStreetResidents);
         txtAssignedWaste = (TextView) findViewById(R.id.collectorAssignedWasteTypeResidents);
         linearView = (LinearLayout) findViewById(R.id.activeCircleResidents);
@@ -97,9 +101,40 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(locationComponent.getLastKnownLocation().getLatitude(),locationComponent.getLastKnownLocation().getLongitude())).zoom(16).build();
-                mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 500);
+                LocationManager lm = (LocationManager)CityForResidentsActivity.this.getSystemService(Context.LOCATION_SERVICE);
+                boolean gps_enabled = false;
+                boolean network_enabled = false;
+
+                try {
+                    gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                } catch(Exception ex) {}
+
+                try {
+                    network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                } catch(Exception ex) {}
+
+                if(!gps_enabled && !network_enabled) {
+                    // notify user
+                    new AlertDialog.Builder(CityForResidentsActivity.this)
+                            .setMessage("Your device location is turned off, would you like to turn it on?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                    CityForResidentsActivity.this.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                }
+                            })
+                            .setNegativeButton("Cancel",null)
+                            .show();
+                } else {
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
+                    } else {
+                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                                .target(new LatLng(locationComponent.getLastKnownLocation().getLatitude(),locationComponent.getLastKnownLocation().getLongitude())).zoom(18).build();
+                        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 500);
+                    }
+                }
+
             }
         });
 
@@ -132,32 +167,6 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
             }
         });
 
-        Weight.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String value = snapshot.getValue(String.class);
-                txtWeight.setText(value + " kg");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.w("debug", "Failed to read value.", error.toException());
-            }
-        });
-
-        Percentage.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String value = snapshot.getValue(String.class);
-                txtPercentage.setText(value + "%");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.w("debug", "Failed to read value.", error.toException());
-            }
-        });
-
         activeStatus.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -181,6 +190,8 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
                 String value = snapshot.getValue(String.class);
                 if(value.equals("idle")){
                     background.setColor(getResources().getColor(R.color.color_offline));
+                    txtAssignedStreet.setText("Collection is done");
+                    txtAssignedWaste.setText("");
                 } else {
                     background.setColor(getResources().getColor(R.color.color_active));
                 }
@@ -196,7 +207,7 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String value = snapshot.getValue(String.class);
-                txtAssignedStreet.setText(value);
+                txtAssignedStreet.setText("Collector is currently on "+value);
             }
 
             @Override
@@ -209,7 +220,8 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String value = snapshot.getValue(String.class);
-                txtAssignedStreet.setText(value);
+
+                txtAssignedStreet.setText("Collector is currently on "+value);
             }
 
             @Override
@@ -231,9 +243,44 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
             }
         });
 
+        loc.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Float latitude = snapshot.child("lat").getValue(Float.class);
+                Float longitude = snapshot.child("long").getValue(Float.class);
+                collectorLat = latitude;
+                collectorLong = longitude;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w("debug", "Failed to read value.", error.toException());
+            }
+        });
+
+        loc.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Float latitude = snapshot.child("lat").getValue(Float.class);
+                Float longitude = snapshot.child("long").getValue(Float.class);
+
+                collectorLat = latitude;
+                collectorLong = longitude;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w("debug", "Failed to read value.", error.toException());
+            }
+        });
+
     }
 
     public void locateCollector(){
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(collectorLat,collectorLong)).zoom(18).build();
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 500);
+
         activeStatus.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -241,20 +288,12 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
                 if(value.equals("idle")){
                     Toast.makeText(getApplicationContext(), "there is no active collector", Toast.LENGTH_SHORT).show();
                 } else {
-
-
-
                     loc.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             Float latitude = snapshot.child("lat").getValue(Float.class);
                             Float longitude = snapshot.child("long").getValue(Float.class);
 
-                            CameraPosition cameraPosition = new CameraPosition.Builder()
-                                    .target(new LatLng(latitude,longitude)).zoom(16).build();
-                            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 500);
-
-//                            Toast.makeText(getApplicationContext(), "nag uupdate"+latitude+longitude, Toast.LENGTH_SHORT).show();
                             String temp = options.getTitle();
                             if(temp == null){
                                 options.title("Collector's Location");
@@ -272,8 +311,6 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
                                 newMark.icon(icon);
                                 mapboxMap.removeAnnotations();
                                 mapboxMap.addMarker(newMark);
-//                                options.position(new LatLng(latitude, longitude));
-                                Toast.makeText(getApplicationContext(), "dapat move", Toast.LENGTH_SHORT).show();
                             }
                         }
 

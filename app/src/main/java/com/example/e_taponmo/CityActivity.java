@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -59,15 +61,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
-public class CityActivity extends AppCompatActivity implements PermissionsListener, OnMapReadyCallback, GPSListener {
+public class CityActivity extends AppCompatActivity implements PermissionsListener, OnMapReadyCallback, GPSListener, Serializable {
 
     private static final int PERMISSION_LOCATION = 1000;
 
@@ -75,7 +81,7 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
     private MapboxMap mapboxMap;
     private LocationComponent locationComponent;
     private PermissionsManager permissionsManager;
-    private com.getbase.floatingactionbutton.FloatingActionButton startCollecting, finishCollecting, backToSchedules;
+    private com.getbase.floatingactionbutton.FloatingActionButton startCollecting, finishCollecting, backToSchedules, collectorCollect;
     private FirebaseDatabase database = FirebaseDatabase.getInstance("https://e-tapon-mo-default-rtdb.firebaseio.com/");
     private MediaPlayer player;
 
@@ -88,23 +94,75 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
     private DatabaseReference loc = database.getReference("loc");
 
     private LinearLayout linearView;
-    private Dialog dialog, dialog_percentage_warning, dialog_weight_warning;
+    private Dialog dialog, dialog_percentage_warning, dialog_weight_warning, dialog_weight_follow_up;
 
     //for collection
     private String finalizedWeight, finalizedStreet, finalizedType, finalizedDate;
+    private String checkActive;
+    private ArrayList<String> streetList;
+    private Queue streetQueue = new LinkedList<>();
 
+    private int weightValue;
+    private String streetValue;
+
+    private int recentWeight;
+    private int newWeight;
+
+    private Map<String, String> collectionMap = new HashMap<String, String>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        LocationManager lm = (LocationManager)CityActivity.this.getSystemService(Context.LOCATION_SERVICE);
+        boolean gps_enabled = false;
+        boolean network_enabled = false;
+
+        try {
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch(Exception ex) {}
+
+        try {
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch(Exception ex) {}
+
+        if(!gps_enabled && !network_enabled) {
+            // notify user
+            new AlertDialog.Builder(CityActivity.this)
+                    .setMessage("Your device location is turned off, would you like to turn it on?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                            CityActivity.this.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            finish();
+                        }
+                    })
+                    .show();
+        }
+
         Mapbox.getInstance(this, getString(R.string.access_token));
+
+        streetList = getIntent().getStringArrayListExtra("streetQueue");
+
+        for(int i = 0; i < streetList.size(); i++){
+            streetQueue.add(streetList.get(i));
+        }
+
+        setStreet();
 
         setContentView(R.layout.activity_city);
 
         startCollecting = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.collectorStartCollecting);
+        collectorCollect = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.collectorCollect);
         finishCollecting = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.collectorFinishCollecting);
         backToSchedules = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.backToSchedules);
+
         linearView = (LinearLayout) findViewById(R.id.activeCircle);
         txtAssignedStreet = (TextView) findViewById(R.id.collectorAssignedStreet);
         txtAssignedWaste = (TextView) findViewById(R.id.collectorAssignedWasteType);
@@ -127,10 +185,13 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
         dialog_weight_warning.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog_weight_warning.setCancelable(false);
 
-        TextView streetReport = dialog.findViewById(R.id.textView);
-        TextView typeReport = dialog.findViewById(R.id.textView2);
-        TextView weightReport = dialog.findViewById(R.id.textView3);
-        TextView dateReport = dialog.findViewById(R.id.textView4);
+        dialog_weight_follow_up = new Dialog(CityActivity.this);
+        dialog_weight_follow_up.setContentView(R.layout.collection_weight_follow_up);
+        dialog_weight_follow_up.getWindow().setBackgroundDrawable(getDrawable(R.drawable.collection_report_background));
+        dialog_weight_follow_up.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog_weight_follow_up.setCancelable(false);
+
+        Button WeightDangerButton = dialog_weight_warning.findViewById(R.id.btnWeightDanger);
         Button btnOkay = dialog.findViewById(R.id.btn_okay);
         Button btnCancel = dialog.findViewById(R.id.btn_cancel);
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
@@ -150,6 +211,27 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
+        WeightDangerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(collectionMap.size() >= 1){
+                    newWeight = weightValue - recentWeight;
+                    String s=String.valueOf(newWeight);
+                    collectionMap.put(streetValue, s);
+                    recentWeight = recentWeight + newWeight;
+
+                    System.out.println("recent is: "+recentWeight);
+                    System.out.println("new is: "+newWeight);
+                    System.out.println(collectionMap);
+                    mapCollect();
+                } else {
+                    saveData();
+                }
+
+                dialog_weight_warning.hide();
+                dialog_weight_follow_up.show();
+            }
+        });
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,13 +243,20 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
         btnOkay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "street: "+finalizedStreet, Toast.LENGTH_SHORT).show();
-                Toast.makeText(getApplicationContext(), "type: "+finalizedType, Toast.LENGTH_SHORT).show();
-                Toast.makeText(getApplicationContext(), "weight: "+finalizedWeight, Toast.LENGTH_SHORT).show();
-                Toast.makeText(getApplicationContext(), "Date: "+finalizedDate, Toast.LENGTH_SHORT).show();
-                saveData();
+                if(collectionMap.size() >= 1){
+                    if(recentWeight < weightValue) {
+                        newWeight = weightValue - recentWeight;
+                        String s = String.valueOf(newWeight);
+                        collectionMap.put(streetValue, s);
+                        mapCollect();
+                    }
+                } else {
+                    saveData();
+                }
                 dialog.dismiss();
-                finish();
+                if(weightValue >= 1 ){
+                    dialog_weight_follow_up.show();
+                }
             }
         });
 
@@ -175,53 +264,108 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
         startCollecting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
+                LocationManager lm = (LocationManager)CityActivity.this.getSystemService(Context.LOCATION_SERVICE);
+                boolean gps_enabled = false;
+                boolean network_enabled = false;
+
+                try {
+                    gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                } catch(Exception ex) {}
+
+                try {
+                    network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                } catch(Exception ex) {}
+
+                if(!gps_enabled && !network_enabled) {
+                    // notify user
+                    new AlertDialog.Builder(CityActivity.this)
+                            .setMessage("Your device location is turned off, would you like to turn it on?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                    CityActivity.this.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                }
+                            })
+                            .setNegativeButton("Cancel",null)
+                            .show();
                 } else {
-                    activeStatus.setValue("active");
-                    showLocation();
-                    CameraPosition cameraPosition = new CameraPosition.Builder()
-                            .target(new LatLng(locationComponent.getLastKnownLocation().getLatitude(),locationComponent.getLastKnownLocation().getLongitude())).zoom(16).build();
-                    mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 500);
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
+                    } else {
+                        showLocation();
+                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                                .target(new LatLng(locationComponent.getLastKnownLocation().getLatitude(),locationComponent.getLastKnownLocation().getLongitude())).zoom(18).build();
+                        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 500);
+                    }
                 }
 
+
+
+            }
+        });
+
+        collectorCollect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(checkActive.equals("active")){
+                    dialog.show();
+                } else{
+                    Toast.makeText(getApplicationContext(), "Collecting isn't started yet", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         finishCollecting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activeStatus.setValue("idle");
-                streetReport.setText(txtAssignedStreet.getText());
-                weightReport.setText(txtWeight.getText());
-                typeReport.setText(txtAssignedWaste.getText());
-                dateReport.setText(currentDate);
-                dialog.show();
+                if(weightValue >= 1){
+                    if(recentWeight == 0){
+                        recentWeight = weightValue;
+                        newWeight = weightValue;
+                        String s=String.valueOf(newWeight);
+                        collectionMap.put(streetValue, s);
+                    } else if(recentWeight == weightValue){
+                        Toast.makeText(getApplicationContext(), "you skipped a street", Toast.LENGTH_SHORT).show();
+                    } else if(recentWeight > weightValue){
+                        String s=String.valueOf(weightValue);
+                        collectionMap.put(streetValue, s);
+                        recentWeight = weightValue;
+                    }else {
+                        newWeight = weightValue - recentWeight;
+                        String s=String.valueOf(newWeight);
+                        collectionMap.put(streetValue, s);
+                        recentWeight = recentWeight + newWeight;
+                    }
+                }
+                Toast.makeText(getApplicationContext(), "Proceeding to next street!", Toast.LENGTH_SHORT).show();
+                streetQueue.poll();
+                setStreet();
+                System.out.println("recent is: "+recentWeight);
+                System.out.println("new is: "+newWeight);
+                System.out.println(collectionMap);
             }
         });
 
         backToSchedules.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                new AlertDialog.Builder(CityActivity.this)
+                        .setMessage("Are you sure? Map Activity will reset")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                activeStatus.setValue("idle");
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("Cancel",null)
+                        .show();
             }
         });
 
 
-        Weight.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String value = snapshot.getValue(String.class);
-                txtWeight = findViewById(R.id.txtWeightValue);
-                txtWeight.setText(value + " kg");
-                finalizedWeight = value;
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.w("debug", "Failed to read value.", error.toException());
-            }
-        });
+
 
         Percentage.addValueEventListener(new ValueEventListener() {
             @Override
@@ -242,6 +386,7 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String value = snapshot.getValue(String.class);
+                checkActive = value;
                 if(value.equals("idle")){
                     background.setColor(getResources().getColor(R.color.color_offline));
                 } else {
@@ -259,6 +404,7 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String value = snapshot.getValue(String.class);
+                checkActive = value;
                 if(value.equals("idle")){
                     background.setColor(getResources().getColor(R.color.color_offline));
                 } else {
@@ -272,12 +418,29 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
             }
         });
 
+
         streetAssigned.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String value = snapshot.getValue(String.class);
                 txtAssignedStreet.setText(value);
                 finalizedStreet = value;
+                streetValue = value;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w("debug", "Failed to read value.", error.toException());
+            }
+        });
+
+        streetAssigned.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String value = snapshot.getValue(String.class);
+                txtAssignedStreet.setText(value);
+                finalizedStreet = value;
+                streetValue = value;
             }
 
             @Override
@@ -322,18 +485,47 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
             }
         });
 
+
+        Weight.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String value = snapshot.getValue(String.class);
+                float converted = Float.parseFloat(value);
+                weightValue = Math.round(converted);
+                txtWeight = findViewById(R.id.txtWeightValue);
+                txtWeight.setText(value + " kg");
+                finalizedWeight = value;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w("debug", "Failed to read value.", error.toException());
+            }
+        });
+
         Weight.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String value = snapshot.getValue(String.class);
                 float converted = Float.parseFloat(value);
+
+                weightValue = Math.round(converted);
+                txtWeight = findViewById(R.id.txtWeightValue);
+                txtWeight.setText(value + " kg");
+                finalizedWeight = value;
+
                 if(converted >= 180){
                     dialog_weight_warning.show();
+
                     if(player == null){
                         player = MediaPlayer.create(CityActivity.this, R.raw.warning_sound);
                     }
                     player.start();
-                } else{
+                } else if(converted < 1 ){
+                    dialog_weight_warning.hide();
+                    dialog_weight_follow_up.hide();
+                }
+                else{
                     dialog_weight_warning.hide();
                 }
             }
@@ -346,37 +538,102 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
 
     }
 
+    private void setStreet(){
+        if(streetQueue.size() >= 1){
+            streetAssigned.setValue(streetQueue.peek().toString());
+        } else {
+            Toast.makeText(this, "collection map size is: "+collectionMap.size(), Toast.LENGTH_SHORT).show();
+
+            if(collectionMap.size() >= 1){
+                mapCollect();
+            }
+
+            Toast.makeText(this, "No more Street to Collect!", Toast.LENGTH_SHORT).show();
+            activeStatus.setValue("idle");
+            finish();
+        }
+
+    }
+
+    private void mapCollect(){
+        for (String street : collectionMap.keySet())
+        {
+            String weight = collectionMap.get(street);
+            System.out.println("Key = " + street + ", Value = " + weight);
+            int converted = Integer.parseInt(weight);
+
+            if (converted >= 1) {
+                StringRequest request = new StringRequest(Request.Method.POST, constants.COLLECTION, response -> {
+                    try {
+                        JSONObject object = new JSONObject(response);
+                        if(object.getBoolean("success")){
+                            Toast.makeText(this, ""+object.getString("message"), Toast.LENGTH_SHORT).show();
+                        } else{
+                            Toast.makeText(this, "error: "+object.getString("message"), Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
+                    dialog.dismiss();
+                }, error -> {
+                    Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+                    error.printStackTrace();
+                }){
+                    @Nullable
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        HashMap<String,String> map = new HashMap<String,String>();
+                        map.put("street", street);
+                        map.put("type", finalizedType);
+                        map.put("weight", weight);
+                        map.put("date", finalizedDate);
+                        return map;
+                    }
+                };
+                RequestQueue queue = Volley.newRequestQueue(this);
+                queue.add(request);
+            }
+        }
+        collectionMap.clear();
+    }
+
     private void saveData(){
-        StringRequest request = new StringRequest(Request.Method.POST, constants.COLLECTION, response -> {
-            try {
-                JSONObject object = new JSONObject(response);
-                if(object.getBoolean("success")){
-                    Toast.makeText(this, ""+object.getString("message"), Toast.LENGTH_SHORT).show();
-                } else{
-                    Toast.makeText(this, "error: "+object.getString("message"), Toast.LENGTH_SHORT).show();
+
+        if(weightValue >= 1){
+            StringRequest request = new StringRequest(Request.Method.POST, constants.COLLECTION, response -> {
+                try {
+                    JSONObject object = new JSONObject(response);
+                    if(object.getBoolean("success")){
+                        Toast.makeText(this, ""+object.getString("message"), Toast.LENGTH_SHORT).show();
+                    } else{
+                        Toast.makeText(this, "error: "+object.getString("message"), Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-            }
-            dialog.dismiss();
-        }, error -> {
-            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
-            error.printStackTrace();
-        }){
-            @Nullable
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                HashMap<String,String> map = new HashMap<String,String>();
-                map.put("street", finalizedStreet);
-                map.put("type", finalizedType);
-                map.put("weight", finalizedWeight);
-                map.put("date", finalizedDate);
-                return map;
-            }
-        };
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(request);
+                dialog.dismiss();
+            }, error -> {
+                Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+                error.printStackTrace();
+            }){
+                @Nullable
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    HashMap<String,String> map = new HashMap<String,String>();
+                    map.put("street", finalizedStreet);
+                    map.put("type", finalizedType);
+                    map.put("weight", finalizedWeight);
+                    map.put("date", finalizedDate);
+                    return map;
+                }
+            };
+            RequestQueue queue = Volley.newRequestQueue(this);
+            queue.add(request);
+        } else {
+            Toast.makeText(this, "Trash bin is considered empty!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showLocation(){
@@ -547,12 +804,24 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
-        if ((keyCode == KeyEvent.KEYCODE_BACK))
-        {
-            finish();
-        }
-        return super.onKeyDown(keyCode, event);
+    public void onBackPressed() {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setMessage("Are you sure? Map activity will reset")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        activeStatus.setValue("idle");
+//                        finish();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+        androidx.appcompat.app.AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }

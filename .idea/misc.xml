@@ -5,13 +5,21 @@
       <map>
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3828125" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/btn_round.xml" value="0.1824074074074074" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/btn_round_danger.xml" value="0.3828125" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/btn_round_primary.xml" value="0.3104166666666667" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/circle.xml" value="0.32407407407407407" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/collection_report_background.xml" value="0.22870370370370371" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/fab_label_background.xml" value="0.12777777777777777" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_arrow.xml" value="0.3828125" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.3828125" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_baseline_announcement_24.xml" value="0.2635416666666667" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_baseline_arrow_circle_down_24.xml" value="0.3020833333333333" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_baseline_battery_0_bar_24.xml" value="0.22870370370370371" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_baseline_check_circle_outline_24.xml" value="0.3828125" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_baseline_done_24.xml" value="0.3828125" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_baseline_download_for_offline_24.xml" value="0.3728205128205128" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.2635416666666667" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_baseline_my_location_24.xml" value="0.3728205128205128" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_baseline_play_arrow_24.xml" value="0.3828125" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_baseline_restore_from_trash_24.xml" value="0.3828125" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_baseline_schedule_24.xml" value="0.2635416666666667" />
@@ -21,18 +29,23 @@
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.3828125" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.3828125" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_launcher_background.xml" value="0.3828125" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_notification.xml" value="0.3828125" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.3828125" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/ic_shopping.xml" value="0.3828125" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/mini_logo.xml" value="0.3828125" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/round_active_status.xml" value="0.3828125" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/top_icon_background.xml" value="0.27291666666666664" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/white_background.xml" value="0.20833333333333334" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/drawable/white_stop.xml" value="0.31851851851851853" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout-v28/activity_home.xml" value="0.321875" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/activity_auth.xml" value="0.1" />
-        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/activity_city.xml" value="0.25" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/activity_city.xml" value="0.33" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/activity_city_for_residents.xml" value="0.25" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/activity_collectors.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/activity_home.xml" value="0.33" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/activity_main2.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/activity_notification.xml" value="0.23385416666666667" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/activity_on_board.xml" value="0.33" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/activity_user_info.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/city_layout.xml" value="0.36666666666666664" />
@@ -40,16 +53,23 @@
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/collection_report_background.xml" value="0.22037037037037038" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/collection_report_layout.xml" value="0.33" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/collection_weight_alert_layout.xml" value="0.33" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/collection_weight_follow_up.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/fragment_dashboard.xml" value="0.24739583333333334" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/fragment_home.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/fragment_notifications.xml" value="0.24739583333333334" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_account.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_add_complaint.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_announcement.xml" value="0.33" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_city.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_complaint.xml" value="0.3338541666666667" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_complaint_details.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_complaints.xml" value="0.3338541666666667" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_edit_complaint.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_home.xml" value="0.25" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_profile.xml" value="0.33" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_profile_info.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_schedule.xml" value="0.33" />
-        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_schedule_residents.xml" value="0.25" />
+        <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_schedule_residents.xml" value="0.5" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_schedules.xml" value="0.1" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_schedules_residents.xml" value="0.1527777777777778" />
         <entry key="..\:/Users/audag/AndroidStudioProjects/ETaponMo2/app/src/main/res/layout/layout_sign_in.xml" value="0.33" />

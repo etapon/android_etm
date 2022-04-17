@@ -24,6 +24,6 @@
         android:textAlignment="center"
         android:textColor="@android:color/black"
         android:layout_gravity="center_horizontal"
-        android:text="Trash bin Percentage is Full, you can try to compress the waste inside the trash bin"/>
+        android:text="If the weight limit hasn't been achieved and the trash bin percentage is full, you might try to compress the garbage inside the trash bin."/>
 
 </LinearLayout>

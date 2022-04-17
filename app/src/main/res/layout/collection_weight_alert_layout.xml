@@ -24,6 +24,14 @@
         android:textAlignment="center"
         android:textColor="@android:color/black"
         android:layout_gravity="center_horizontal"
-        android:text="Trash bin weight is very high, don't collect more cause it may brake the weighing sensor"/>
+        android:text="The weight of the trash bin is extremely high; adding more garbage may cause the weighing sensor to fail."/>
+
+    <Button
+        android:id="@+id/btnWeightDanger"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/btn_round_primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Collect" />
 
 </LinearLayout>

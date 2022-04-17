@@ -4,6 +4,9 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
+    android:elevation="5dp"
+    android:layout_margin="5dp"
+    android:background="@drawable/top_icon_background"
     android:outlineAmbientShadowColor="@color/colorBlack">
 
     <LinearLayout

@@ -24,6 +24,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.e_taponmo.Adapters.ScheduleAdapter;
 import com.example.e_taponmo.CollectorsActivity;
 import com.example.e_taponmo.Models.Schedule;
+import com.example.e_taponmo.Models.Street;
 import com.example.e_taponmo.R;
 import com.example.e_taponmo.constants;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -125,6 +126,13 @@ public class ScheduleFragment extends Fragment {
                         schedule.setDay(scheduleObject.getString("day"));
                         schedule.setTypeOfWaste(scheduleObject.getString("type"));
                         schedule.setStartOfCollection(scheduleObject.getString("startOfCollection"));
+
+                        JSONArray streets = scheduleObject.getJSONArray("queue");
+                        ArrayList<String> listdata = new ArrayList<String>();
+
+                        for(int i2 = 0; i2 < streets.length(); i2++){
+                            schedule.addToQueue(streets.get(i2).toString());
+                        }
 
                         arrayList.add(schedule);
 

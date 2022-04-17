@@ -25,6 +25,7 @@ import com.example.e_taponmo.Adapters.StreetAdapter;
 import com.example.e_taponmo.CollectorsActivity;
 import com.example.e_taponmo.Models.Schedule;
 import com.example.e_taponmo.Models.Street;
+import com.example.e_taponmo.Models.StreetQueue;
 import com.example.e_taponmo.R;
 import com.example.e_taponmo.constants;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -37,8 +38,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 public class StreetFragment extends Fragment {
     private View view;
@@ -53,6 +56,8 @@ public class StreetFragment extends Fragment {
     private FirebaseDatabase database = FirebaseDatabase.getInstance("https://e-tapon-mo-default-rtdb.firebaseio.com/");
 
     private DatabaseReference activeStatus = database.getReference("activeStatus");
+
+    private Queue<String> streetQueue;
 
     public StreetFragment(){
 
@@ -81,6 +86,7 @@ public class StreetFragment extends Fragment {
         ((CollectorsActivity)getContext()).setSupportActionBar(toolbar);
 
         getStreets();
+//        getQueue();
 
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -89,12 +95,13 @@ public class StreetFragment extends Fragment {
             }
         });
 
+        System.out.println(arrayList.size());
     }
 
     public void getStreets(){
         arrayList = new ArrayList<>();
+        streetQueue = new LinkedList<>();
         refreshLayout.setRefreshing(true);
-        Toast.makeText(getContext(), "bundled ID:"+bundledId, Toast.LENGTH_SHORT).show();
         StringRequest request = new StringRequest(Request.Method.GET, constants.SCHEDULE+bundledId, response -> {
 
             try {
@@ -106,9 +113,9 @@ public class StreetFragment extends Fragment {
 
                     for(int i2 = 0; i2 < streets.length(); i2++){
                         Street street = new Street();
-                        System.out.println(streets.get(i2).toString());
                         street.setStreetName(streets.get(i2).toString());
                         arrayList.add(street);
+
                     }
 
                     streetAdapter = new StreetAdapter(getContext(), arrayList);
@@ -134,5 +141,13 @@ public class StreetFragment extends Fragment {
         };
         RequestQueue queue = Volley.newRequestQueue(getContext());
         queue.add(request);
+    }
+    public void getQueue(){
+        Toast.makeText(getContext(), ""+streetQueue.peek(), Toast.LENGTH_SHORT).show();
+    }
+    public void addToQueue(String street){
+        streetQueue.add(street);
+        Toast.makeText(getContext(), ""+streetQueue.peek(), Toast.LENGTH_SHORT).show();
+
     }
 }

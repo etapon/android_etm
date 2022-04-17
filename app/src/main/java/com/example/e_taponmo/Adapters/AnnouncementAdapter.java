@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.text.Layout;
+import android.text.format.DateUtils;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +22,10 @@ import com.example.e_taponmo.R;
 import com.example.e_taponmo.constants;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.TimeZone;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -58,18 +62,22 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
         byte[] decodedStringProfile = Base64.decode(cleanImageProfile, 0);
         Bitmap decodedByteProfile = BitmapFactory.decodeByteArray(decodedStringProfile, 0, decodedStringProfile.length);
 
+        String TimeAgo = getTimeAgo(announcement.getDate());
+
+
+
         holder.imgAnnouncement.setImageBitmap(decodedByte);
 
         holder.imgProfile.setImageBitmap(decodedByteProfile);
         holder.txtCreator.setText(announcement.getCreator());
         holder.txtTitle.setText(announcement.getTitle());
         if(announcement.getStreet() == null){
-            holder.txtBarangay.setText("");
+            holder.txtBarangay.setText("Barangay 178");
         } else {
             holder.txtBarangay.setText("for the residents of: "+announcement.getStreet());
         }
 
-        holder.txtAnnouncementDate.setText(announcement.getDate());
+        holder.txtAnnouncementDate.setText(TimeAgo);
         holder.txtDesc.setText(announcement.getDesc());
     }
 
@@ -100,6 +108,21 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
 
 
         }
+    }
+
+    public String getTimeAgo(String providedDate){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC+8"));
+        try {
+            long time = sdf.parse(providedDate).getTime();
+            long now = System.currentTimeMillis();
+            CharSequence ago =
+                    DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS);
+            return ago+"";
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

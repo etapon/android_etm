@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:elevation="5dp"
+    android:layout_margin="10dp"
+    android:id="@+id/complaintCard"
+    android:background="@drawable/top_icon_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="5dp"
+        >
+
+        <LinearLayout
+            android:id="@+id/layoutScheduleResidents"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+
+            android:padding="10dp">
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="5dp"
+                android:id="@+id/imgComplaintProfile"
+                android:src="@color/bootsTrap_colorPrimary"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="6dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/complaintName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Alexander Udag"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/complaintDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Feb 14"
+                    android:textSize="11sp"/>
+
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/complaintEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:src="@drawable/ic_baseline_edit_24"/>
+            <ImageView
+                android:id="@+id/complaintDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:src="@drawable/ic_baseline_delete_24"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/complaintTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="ako ngapo pala ay may problema"
+            android:textAllCaps="true"
+            android:textSize="15sp"
+            android:paddingStart="10dp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
