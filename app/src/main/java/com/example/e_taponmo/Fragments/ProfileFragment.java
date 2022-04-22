@@ -2,6 +2,7 @@ package com.example.e_taponmo.Fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -38,6 +39,7 @@ public class ProfileFragment extends Fragment {
     private ProgressDialog dialog;
     private SharedPreferences.Editor editor;
     private CircleImageView roleIcon;
+    private Context context;
 
     public ProfileFragment(){
 
@@ -47,6 +49,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.layout_profile_info, container, false);
+        context = view.getContext();
         init();
         return view;
     }
@@ -98,13 +101,30 @@ public class ProfileFragment extends Fragment {
         btnUserLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.setMessage("logging out...");
-                dialog.show();
-                editor.clear();
-                editor.commit();
-                getActivity().finish();
-                startActivity(new Intent(getContext(), AuthActivity.class));
-                dialog.dismiss();
+                androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
+                builder.setMessage("Are you sure? Logging out your account")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialog.setMessage("logging out...");
+                                dialog.show();
+                                editor.clear();
+                                editor.commit();
+                                getActivity().finish();
+                                startActivity(new Intent(getContext(), AuthActivity.class));
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+                androidx.appcompat.app.AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+
             }
         });
 

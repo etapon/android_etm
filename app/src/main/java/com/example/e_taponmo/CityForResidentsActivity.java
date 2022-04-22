@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -73,11 +75,12 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
     private DatabaseReference streetAssigned = database.getReference("streetAssigned");
     private DatabaseReference wasteType = database.getReference("wasteType");
     private DatabaseReference loc = database.getReference("loc");
+    private DatabaseReference unloading = database.getReference("unloading");
 
     private LinearLayout linearView;
     private MarkerOptions options = new MarkerOptions();
 
-
+    private Dialog dialog_unloading;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +100,14 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
         linearView = (LinearLayout) findViewById(R.id.activeCircleResidents);
 
         GradientDrawable background = (GradientDrawable) linearView.getBackground();
+
+
+        dialog_unloading = new Dialog(CityForResidentsActivity.this);
+        dialog_unloading.setContentView(R.layout.collection_unloading_alert_layout);
+        dialog_unloading.getWindow().setBackgroundDrawable(getDrawable(R.drawable.collection_report_background));
+        dialog_unloading.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog_unloading.setCancelable(false);
+        dialog_unloading.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,7 +174,17 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
         backToHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                new AlertDialog.Builder(CityForResidentsActivity.this)
+                        .setMessage("Are you sure? Leaving the map")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("Cancel",null)
+                        .show();
+
             }
         });
 
@@ -194,6 +215,23 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
                     txtAssignedWaste.setText("");
                 } else {
                     background.setColor(getResources().getColor(R.color.color_active));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w("debug", "Failed to read value.", error.toException());
+            }
+        });
+
+        unloading.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String value = snapshot.getValue(String.class);
+                if(value.equals("yes")){
+                    dialog_unloading.show();
+                } else {
+                    dialog_unloading.dismiss();
                 }
             }
 
@@ -447,14 +485,19 @@ public class CityForResidentsActivity extends AppCompatActivity implements Permi
         }
     }
 
+
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
-        if ((keyCode == KeyEvent.KEYCODE_BACK))
-        {
-            finish();
-        }
-        return super.onKeyDown(keyCode, event);
+    public void onBackPressed() {
+        new AlertDialog.Builder(CityForResidentsActivity.this)
+                .setMessage("Are you sure? Leaving the map")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("Cancel",null)
+                .show();
     }
 
 }

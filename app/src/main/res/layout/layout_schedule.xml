@@ -2,24 +2,25 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:clickable="true"
     android:focusable="true"
-    android:elevation="5dp"
+    android:elevation="20dp"
+    app:cardCornerRadius="10dp"
     android:layout_margin="10dp"
-    android:background="@drawable/top_icon_background"
-    android:outlineAmbientShadowColor="@color/colorBlack"
-    >
+    android:outlineAmbientShadowColor="@color/colorBlack">
 
     <LinearLayout
         android:id="@+id/layoutSchedule"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_margin="5dp"
+
         >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#023047"
             android:padding="10dp"
             android:orientation="vertical">
             <TextView
@@ -29,9 +30,9 @@
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:elevation="5dp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textStyle="bold"
-                android:text="Day"/>
+                android:text="   Day"/>
         </LinearLayout>
 
         <LinearLayout

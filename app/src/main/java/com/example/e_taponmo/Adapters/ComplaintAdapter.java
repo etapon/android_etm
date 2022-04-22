@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.text.Layout;
 import android.text.format.DateUtils;
 import android.util.Base64;
@@ -48,8 +49,8 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.Comp
     private ArrayList<Complaint> list;
     private String base64Image, getBase64ImageProfile, complaintId;
     private Dialog dialog, dialogDisplay;
-    private TextView residentComplaintTitleEdit, residentComplaintDescriptionEdit, complaintTitleDisplay, complaintNameDisplay, complaintDescriptionDisplay;
-
+    private TextView residentComplaintTitleEdit, residentComplaintDescriptionEdit, complaintTitleDisplay, complaintNameDisplay, complaintDescriptionDisplay, complaintResidentEmailDisplay;
+    private String role;
     public ComplaintAdapter(Context context, ArrayList<Complaint> list){
         this.context = context;
         this.list = list;
@@ -67,13 +68,17 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.Comp
         Complaint complaint = list.get(position);
 
         SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
-        String role = sharedPreferences.getString("role", "");
+        role = sharedPreferences.getString("role", "");
         if(role.equals("admin")){
             holder.complaintEdit.setVisibility(View.INVISIBLE);
-            holder.complaintDelete.setVisibility(View.INVISIBLE);
+        }
+        if(complaint.getSeen().equals(false)){
+            holder.complaintSeen2.setTextColor(Color.parseColor("#A7A7A7"));
+            holder.complaintSeen.setVisibility(View.INVISIBLE);
+            holder.complaintSeen2.setText("not seen");
         }
 
-        String TimeAgo = getTimeAgo(complaint.getComplaintDate());
+        String TimeAgo = getTimeAgo(complaint.getComplaintDate().toString());
 
         dialog = new Dialog(context);
         dialog.setContentView(R.layout.layout_edit_complaint);
@@ -92,6 +97,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.Comp
         complaintTitleDisplay = dialogDisplay.findViewById(R.id.complaintTitleDisplay);
         complaintNameDisplay = dialogDisplay.findViewById(R.id.complaintNameDisplay);
         complaintDescriptionDisplay = dialogDisplay.findViewById(R.id.complaintDescriptionDisplay);
+        complaintResidentEmailDisplay = dialogDisplay.findViewById(R.id.complaintEmailDisplay);
         Button done = dialogDisplay.findViewById(R.id.btnComplaintDone);
         dialogDisplay.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
@@ -110,10 +116,18 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.Comp
         holder.complaintCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 complaintTitleDisplay.setText(complaint.getTitle());
+                complaintResidentEmailDisplay.setText(complaint.getResidentEmail());
                 complaintNameDisplay.setText(complaint.getResidentName());
                 complaintDescriptionDisplay.setText(complaint.getDescription());
+                complaintId = complaint.getComplaintId();
+
                 dialogDisplay.show();
+
+                if(complaint.getSeen().equals(false) && role.equals("admin")){
+                    seenComplaint(complaintId);
+                }
             }
         });
 
@@ -178,8 +192,8 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.Comp
     }
 
     class ComplaintHolder extends RecyclerView.ViewHolder{
-        private TextView complaintName, complaintDate, complaintTitle;
-        private ImageView complaintEdit, complaintDelete;
+        private TextView complaintName, complaintDate, complaintTitle, complaintSeen2;
+        private ImageView complaintEdit, complaintDelete, complaintSeen;
         private CircleImageView imgComplaintProfile;
         private CardView complaintCard;
 
@@ -192,6 +206,9 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.Comp
             complaintDelete = itemView.findViewById(R.id.complaintDelete);
             imgComplaintProfile = itemView.findViewById(R.id.imgComplaintProfile);
             complaintCard = itemView.findViewById(R.id.complaintCard);
+            complaintSeen = itemView.findViewById(R.id.complaintSeen);
+            complaintSeen2 = itemView.findViewById(R.id.complaintSeen2);
+
         }
     }
 
@@ -273,9 +290,43 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.Comp
             protected Map<String, String> getParams() throws AuthFailureError {
                 HashMap<String,String> map = new HashMap<String,String>();
                 map.put("title", residentComplaintTitleEdit.getText().toString());
-                map.put("description", residentComplaintTitleEdit.getText().toString());
+                map.put("description", residentComplaintDescriptionEdit.getText().toString());
                 return map;
             }
+        };
+
+        RequestQueue queue = Volley.newRequestQueue(context);
+        queue.add(request);
+        dialog.dismiss();
+    }
+
+    public void seenComplaint(String complaintId){
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+
+        StringRequest request = new StringRequest(Request.Method.GET, constants.SEEN_COMPLAINT+complaintId, response -> {
+
+            try {
+                JSONObject object = new JSONObject(response);
+                if(object.getBoolean("success")){
+                    Toast.makeText(context, ""+object.getString("message"), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, ""+object.getString("message"), Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }, error -> {
+            error.printStackTrace();
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                String token = sharedPreferences.getString("token", "");
+                HashMap<String,String> map = new HashMap<>();
+                map.put("Authorization", "Bearer "+token);
+                return map;
+            }
+
         };
 
         RequestQueue queue = Volley.newRequestQueue(context);

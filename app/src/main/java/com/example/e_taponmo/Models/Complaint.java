@@ -1,7 +1,25 @@
 package com.example.e_taponmo.Models;
 
 public class Complaint {
-    private String complaintId, residentId, residentName, residentProfile, residentStreet, title, description, complaintDate;
+    private String complaintId, residentId, residentName, residentProfile, residentStreet, title, description, complaintDate, residentEmail;
+    private Boolean seen;
+
+
+    public Boolean getSeen() {
+        return seen;
+    }
+
+    public void setSeen(Boolean seen) {
+        this.seen = seen;
+    }
+
+    public String getResidentEmail() {
+        return residentEmail;
+    }
+
+    public void setResidentEmail(String residentEmail) {
+        this.residentEmail = residentEmail;
+    }
 
     public String getComplaintDate() {
         return complaintDate;

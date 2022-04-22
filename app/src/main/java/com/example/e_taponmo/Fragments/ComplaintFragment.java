@@ -134,6 +134,17 @@ public class ComplaintFragment extends Fragment {
 
                 }, error -> {
                     error.printStackTrace();
+                    androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
+                    builder.setMessage("An error occurred! Please check your internet connection")
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            });
+                    androidx.appcompat.app.AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
                 }){
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
@@ -149,13 +160,14 @@ public class ComplaintFragment extends Fragment {
                         HashMap<String,String> map = new HashMap<String,String>();
 
                         String image = (sharedPreferences.getString("image", ""));
-
+                        String residentEmail = (sharedPreferences.getString("email", ""));
                         map.put("residentId", residentId);
                         map.put("residentName", residentName);
                         map.put("residentStreet", residentStreet);
                         map.put("title", residentComplaintTitle.getText().toString());
                         map.put("description", residentComplaintDescription.getText().toString());
                         map.put("residentProfile", image);
+                        map.put("residentEmail", residentEmail);
                         return map;
                     }
                 };
@@ -211,7 +223,10 @@ public class ComplaintFragment extends Fragment {
                         complaint.setResidentName(complaintObject.getString("residentName"));
                         complaint.setResidentStreet(complaintObject.getString("residentStreet"));
                         complaint.setComplaintDate(complaintObject.getString("createdAt"));
+                        complaint.setResidentEmail(complaintObject.getString("residentEmail"));
                         complaint.setResidentProfile(complaintObject.getString("residentProfile"));
+//                        complaint.setEmail(complaintObject.getString(""));
+                        complaint.setSeen(complaintObject.getBoolean("seen"));
 
                         arrayList.add(complaint);
                     }
@@ -226,6 +241,17 @@ public class ComplaintFragment extends Fragment {
 
         }, error -> {
             error.printStackTrace();
+            androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
+            builder.setMessage("An error occurred! Please check your internet connection")
+                    .setCancelable(false)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+            androidx.appcompat.app.AlertDialog alertDialog = builder.create();
+            alertDialog.show();
             refreshLayout.setRefreshing(false);
         }){
             @Override
@@ -261,6 +287,8 @@ public class ComplaintFragment extends Fragment {
                         complaint.setResidentStreet(complaintObject.getString("residentStreet"));
                         complaint.setComplaintDate(complaintObject.getString("createdAt"));
                         complaint.setResidentProfile(complaintObject.getString("residentProfile"));
+                        complaint.setResidentEmail(complaintObject.getString("residentEmail"));
+                        complaint.setSeen(complaintObject.getBoolean("seen"));
 
                         arrayList.add(complaint);
                     }
@@ -275,6 +303,17 @@ public class ComplaintFragment extends Fragment {
 
         }, error -> {
             error.printStackTrace();
+            androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
+            builder.setMessage("An error occurred! Please check your internet connection")
+                    .setCancelable(false)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+            androidx.appcompat.app.AlertDialog alertDialog = builder.create();
+            alertDialog.show();
             refreshLayout.setRefreshing(false);
         }){
             @Override

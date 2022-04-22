@@ -21,7 +21,8 @@
             android:exported="false" />
         <activity
             android:name=".CityForResidentsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".CollectorsActivity"
             android:exported="false" />

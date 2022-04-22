@@ -1,6 +1,7 @@
 package com.example.e_taponmo.Adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
@@ -100,11 +101,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.Schedu
         String str = f.format(new Date());
 
         if(str.equals(schedule.day)){
-            activeStatus.setColor(context.getResources().getColor(R.color.color_idle));
-            holder.txtScheduleActiveStatus.setText("day of collection");
+            activeStatus.setColor(context.getResources().getColor(R.color.color_active));
+            holder.txtScheduleActiveStatus.setText("Day of collection");
         }else{
             activeStatus.setColor(context.getResources().getColor(R.color.color_offline));
-            holder.txtScheduleActiveStatus.setText("offline");
+            holder.txtScheduleActiveStatus.setText("Offline");
         }
 
         holder.layoutSchedule.setOnClickListener(new View.OnClickListener() {
@@ -115,7 +116,17 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.Schedu
                     wasteType.setValue(schedule.getTypeOfWaste());
                     getStreets();
                 } else {
-                    Toast.makeText(context, "this schedule is for "+schedule.getDay()+" only", Toast.LENGTH_SHORT).show();
+                    androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
+                    builder.setMessage("Please pick a correct schedule!  This schedule is for "+schedule.day+" only")
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            });
+                    androidx.appcompat.app.AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
                 }
             }
         });

@@ -1,6 +1,7 @@
 package com.example.e_taponmo.Fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
@@ -61,7 +62,7 @@ public class ScheduleForResidentsFragment extends Fragment {
     private ScheduleResidentsAdapter scheduleResidentsAdapter;
     private MaterialToolbar toolbar;
     private SharedPreferences sharedPreferences;
-
+    private Context context;
     private String residentStreet, role;
 
     public ScheduleForResidentsFragment(){
@@ -72,6 +73,7 @@ public class ScheduleForResidentsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.layout_schedules_residents, container, false);
+        context = view.getContext();
         init();
         return view;
     }
@@ -173,6 +175,17 @@ public class ScheduleForResidentsFragment extends Fragment {
                 refreshLayout.setRefreshing(false);
             }, error -> {
                 error.printStackTrace();
+                androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
+                builder.setMessage("An error occurred! Please check your internet connection")
+                        .setCancelable(false)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+                androidx.appcompat.app.AlertDialog alertDialog = builder.create();
+                alertDialog.show();
                 refreshLayout.setRefreshing(false);
             }){
                 @Override

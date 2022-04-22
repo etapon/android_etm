@@ -33,6 +33,7 @@ public class MyService extends Service {
     private DatabaseReference streetAssigned = database.getReference("streetAssigned");
     private DatabaseReference wasteType = database.getReference("wasteType");
     private String assigned;
+    private String ifActive;
     private String streetOnPref;
     private String roleOnPref;
 
@@ -48,27 +49,69 @@ public class MyService extends Service {
         streetOnPref = (userPref.getString("street", ""));
         roleOnPref = (userPref.getString("role", ""));
 
-        getAssigned();
-
-        streetAssigned.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String value = dataSnapshot.getValue(String.class);
-                assigned = value;
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                System.out.println("Failed to read value"+error.toException());
-            }
-        });
+//        activeStatus.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                String value = dataSnapshot.getValue(String.class);
+//                ifActive = value;
+//                if(value.equals("active")){
+//                    streetAssigned.addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                            String value = dataSnapshot.getValue(String.class);
+//                            if(ifActive == "active" && value.equals(streetOnPref) && roleOnPref.equals("resident")){
+//                                createNotification();
+//                            }
+//                        }
+//                        @Override
+//                        public void onCancelled(DatabaseError error) {
+//                            System.out.println("Failed to read value"+error.toException());
+//                        }
+//                    });
+//
+//                    streetAssigned.addValueEventListener(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                            String value = dataSnapshot.getValue(String.class);
+//                            if(ifActive == "active" && value.equals(streetOnPref) && roleOnPref.equals("resident")){
+//                                createNotification();
+//                            }
+//                        }
+//                        @Override
+//                        public void onCancelled(DatabaseError error) {
+//                            System.out.println("Failed to read value"+error.toException());
+//                        }
+//                    });
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//                System.out.println("Failed to read value"+error.toException());
+//            }
+//        });
 
         activeStatus.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String value = dataSnapshot.getValue(String.class);
-                if(value.equals("active") && assigned.equals(streetOnPref) && roleOnPref.equals("resident")){
-                    createNotification();
+                ifActive = value;
+                if(value.equals("active")){
+//                    Toast.makeText(getApplicationContext(), "active value is: "+ifActive, Toast.LENGTH_SHORT).show();
+                    streetAssigned.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            String value = dataSnapshot.getValue(String.class);
+                            if(ifActive.equals("active") && value.equals(streetOnPref) && roleOnPref.equals("resident")){
+                                createNotification();
+                            }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+                            System.out.println("Failed to read value"+error.toException());
+                        }
+                    });
                 }
             }
 
@@ -79,22 +122,12 @@ public class MyService extends Service {
         });
 
 
+
+
+
+
+
         return START_STICKY;
-    }
-
-    public void getAssigned() {
-        streetAssigned.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String value = dataSnapshot.getValue(String.class);
-                assigned = value;
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                System.out.println("Failed to read value"+error.toException());
-            }
-        });
     }
 
     public void createNotification(){

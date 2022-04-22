@@ -2,11 +2,12 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:clickable="true"
     android:focusable="true"
-    android:elevation="5dp"
-    android:layout_margin="10dp"
-    android:background="@drawable/top_icon_background">
+    android:elevation="20dp"
+    app:cardCornerRadius="10dp"
+    android:layout_margin="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,6 +45,25 @@
                     android:textStyle="bold"
                     android:textAlignment="viewEnd" />
             </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email:"
+                android:textAlignment="viewStart" />
+
+            <TextView
+                android:id="@+id/complaintEmailDisplay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="audag25@gmail.com"
+                android:textStyle="bold"
+                android:textAlignment="viewEnd" />
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

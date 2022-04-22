@@ -6,14 +6,14 @@
     android:padding="10dp">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_warning_24"
-        android:layout_gravity="center_horizontal"/>
+        android:layout_width="89dp"
+        android:layout_height="83dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_baseline_info_24" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Capacity Warning!"
+        android:text="Unloading current load!"
         android:textSize="25sp"
         android:textColor="@android:color/black"
         android:layout_gravity="center_horizontal"
@@ -24,14 +24,6 @@
         android:textAlignment="center"
         android:textColor="@android:color/black"
         android:layout_gravity="center_horizontal"
-        android:text="If the weight limit hasn't been achieved and the trash bin percentage is full, you might try to compress the garbage inside the trash bin."/>
-
-    <Button
-        android:id="@+id/btnPercentageDanger"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/btn_round_primary"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Collect" />
+        android:text="The collector's container has reached its limit, the collector is on process of unloading the waste. Please be patient and wait for the collectors return"/>
 
 </LinearLayout>

@@ -92,6 +92,7 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
     private DatabaseReference streetAssigned = database.getReference("streetAssigned");
     private DatabaseReference wasteType = database.getReference("wasteType");
     private DatabaseReference loc = database.getReference("loc");
+    private DatabaseReference unloading = database.getReference("unloading");
 
     private LinearLayout linearView;
     private Dialog dialog, dialog_percentage_warning, dialog_weight_warning, dialog_weight_follow_up;
@@ -192,6 +193,7 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
         dialog_weight_follow_up.setCancelable(false);
 
         Button WeightDangerButton = dialog_weight_warning.findViewById(R.id.btnWeightDanger);
+        Button PercentageDangerButton = dialog_percentage_warning.findViewById(R.id.btnPercentageDanger);
         Button btnOkay = dialog.findViewById(R.id.btn_okay);
         Button btnCancel = dialog.findViewById(R.id.btn_cancel);
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
@@ -229,6 +231,28 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
                 }
 
                 dialog_weight_warning.hide();
+                dialog_weight_follow_up.show();
+            }
+        });
+
+        PercentageDangerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(collectionMap.size() >= 1){
+                    newWeight = weightValue - recentWeight;
+                    String s=String.valueOf(newWeight);
+                    collectionMap.put(streetValue, s);
+                    recentWeight = recentWeight + newWeight;
+
+                    System.out.println("recent is: "+recentWeight);
+                    System.out.println("new is: "+newWeight);
+                    System.out.println(collectionMap);
+                    mapCollect();
+                } else {
+                    saveData();
+                }
+
+                dialog_percentage_warning.hide();
                 dialog_weight_follow_up.show();
             }
         });
@@ -296,6 +320,29 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
                         CameraPosition cameraPosition = new CameraPosition.Builder()
                                 .target(new LatLng(locationComponent.getLastKnownLocation().getLatitude(),locationComponent.getLastKnownLocation().getLongitude())).zoom(18).build();
                         mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 500);
+
+                        activeStatus.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String value = snapshot.getValue(String.class);
+                                if(value.equals("idle")){
+
+                                } else {
+
+                                    DatabaseReference Lat = database.getReference("loc").child("lat");
+                                    Lat.setValue(locationComponent.getLastKnownLocation().getLatitude());
+
+                                    DatabaseReference Long = database.getReference("loc").child("long");
+                                    Long.setValue(locationComponent.getLastKnownLocation().getLongitude());
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.w("debug", "Failed to read value.", error.toException());
+                            }
+                        });
+
                     }
                 }
 
@@ -309,6 +356,7 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
             public void onClick(View view) {
                 if(checkActive.equals("active")){
                     dialog.show();
+
                 } else{
                     Toast.makeText(getApplicationContext(), "Collecting isn't started yet", Toast.LENGTH_SHORT).show();
                 }
@@ -470,6 +518,7 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
                 int converted = Integer.parseInt(value);
                 if(converted >= 100){
                     dialog_percentage_warning.show();
+                    unloading.setValue("yes");
                     if(player == null){
                         player = MediaPlayer.create(CityActivity.this, R.raw.warning_sound);
                     }
@@ -503,6 +552,8 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
             }
         });
 
+
+
         Weight.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -516,7 +567,7 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
 
                 if(converted >= 180){
                     dialog_weight_warning.show();
-
+                    unloading.setValue("yes");
                     if(player == null){
                         player = MediaPlayer.create(CityActivity.this, R.raw.warning_sound);
                     }
@@ -524,9 +575,11 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
                 } else if(converted < 1 ){
                     dialog_weight_warning.hide();
                     dialog_weight_follow_up.hide();
+                    unloading.setValue("no");
                 }
                 else{
                     dialog_weight_warning.hide();
+
                 }
             }
 
@@ -805,23 +858,16 @@ public class CityActivity extends AppCompatActivity implements PermissionsListen
 
     @Override
     public void onBackPressed() {
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
-        builder.setMessage("Are you sure? Map activity will reset")
-                .setCancelable(false)
+        new AlertDialog.Builder(CityActivity.this)
+                .setMessage("Are you sure? Map Activity will reset")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
                         activeStatus.setValue("idle");
-//                        finish();
+                        finish();
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                });
-        androidx.appcompat.app.AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+                .setNegativeButton("Cancel",null)
+                .show();
     }
 }

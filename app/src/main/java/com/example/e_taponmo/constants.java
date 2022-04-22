@@ -15,4 +15,5 @@ public class constants {
     public static final String DELETE_COMPLAINT = URL + "/complaints/";
     public static final String UPDATE_COMPLAINT = URL + "/complaints/";
     public static final String COMPLAINTS_FOR_RESIDENT = URL + "/complaints/";
+    public static final String SEEN_COMPLAINT = URL + "/complaints/seenComplaint/";
 }

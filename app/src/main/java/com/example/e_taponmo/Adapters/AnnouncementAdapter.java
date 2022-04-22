@@ -71,8 +71,8 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
         holder.imgProfile.setImageBitmap(decodedByteProfile);
         holder.txtCreator.setText(announcement.getCreator());
         holder.txtTitle.setText(announcement.getTitle());
-        if(announcement.getStreet() == null){
-            holder.txtBarangay.setText("Barangay 178");
+        if(announcement.getStreet() == null || announcement.getStreet().equals("")){
+            holder.txtBarangay.setText("for the residents of: Barangay 178");
         } else {
             holder.txtBarangay.setText("for the residents of: "+announcement.getStreet());
         }

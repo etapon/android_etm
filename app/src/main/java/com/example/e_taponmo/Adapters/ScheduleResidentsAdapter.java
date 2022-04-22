@@ -1,6 +1,7 @@
 package com.example.e_taponmo.Adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
@@ -82,7 +83,7 @@ public class ScheduleResidentsAdapter extends RecyclerView.Adapter<ScheduleResid
             holder.txtScheduleActiveStatusResidents.setText("Day of Collection");
         }else {
             activeStatus.setColor(context.getResources().getColor(R.color.color_offline));
-            holder.txtScheduleActiveStatusResidents.setText("offline");
+            holder.txtScheduleActiveStatusResidents.setText("Offline");
         }
 
         activeStatusDb.addValueEventListener(new ValueEventListener() {
@@ -114,10 +115,30 @@ public class ScheduleResidentsAdapter extends RecyclerView.Adapter<ScheduleResid
                     if(isActive != null && isActive == true){
                         context.startActivity(new Intent(context, CityForResidentsActivity.class));
                     } else {
-                        Toast.makeText(context, "Sorry, But there is no active collector right now", Toast.LENGTH_LONG).show();
+                        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
+                        builder.setMessage("Sorry! There is no active collector right now, please try again later")
+                                .setCancelable(false)
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.cancel();
+                                    }
+                                });
+                        androidx.appcompat.app.AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
                     }
                 } else{
-                    Toast.makeText(context, "This schedule is only available in "+scheduleResidents.getDay(), Toast.LENGTH_LONG).show();
+                    androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
+                    builder.setMessage("Please pick a correct schedule!  This schedule is for "+scheduleResidents.day+" only")
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            });
+                    androidx.appcompat.app.AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
                 }
             }
         });
